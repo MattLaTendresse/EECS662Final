@@ -169,3 +169,34 @@ typeofM cont (App x y) = do { tyXd :->: tyXr <- typeofM cont x ;
                              else Nothing }
 typeofM c (Fix t) = do { (d :->: r) <- typeofM c t;
                          return r }
+                         
+                         
+                         
+                         
+--Part2 - Junyi Zhao
+
+evalStat :: EnvVal -> KULang -> (Maybe KULangVal)
+evalStat _ (Num n) = return (NumV n)
+evalStat e (Plus l r) = do{(NumV l') <- (evalStat e l);
+                              (NumV r') <- (evalStat e r);
+                              return (NumV (l' + r'))}
+evalStat e (Minus l r) = do{(NumV l') <- (evalStat e l);
+                               (NumV r') <- (evalStat e r);
+                               if(r' < l') then return (NumV (l' - r')) else Nothing}
+evalStat e (Mult l r) = do{(NumV l') <- (evalStat e l);
+                              (NumV r') <- (evalStat e r);
+                              return (NumV (l' * r'))}
+evalStat e (Div l r) = do{(NumV l') <- (evalStat e l);
+                               (NumV r') <- (evalStat e r);
+                               if(r' == 0) then Nothing else return (NumV (l' `div` r'))}
+evalStat e (Exp l r) = do{(NumV l') <- (evalStat e l);
+                               (NumV r') <- (evalStat e r);
+                               return (NumV (l' ^ r'))}
+evalStat e (Lambda i b) = return (ClosureV i b e)
+evalStat e (App f a) = do {(ClosureV i b e) <- (evalStat e f);
+                               a' <- (evalStat e a);
+                               evalStat ((i,a'):e) b }
+evalStat e (Id i) = lookup i e
+evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
+                                if c'==0 then (evalStat e t) else (evalStat e o) }
+--end of part 2 by Junyi Zhao
