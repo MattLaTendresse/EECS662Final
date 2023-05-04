@@ -54,6 +54,7 @@ data KULangExt where
 -- Environment Definitions
 type Env = [(String,KULang)]
 type EnvVal = [(String,KULangVal)]
+type Gamma = [(String, TypeKULang)]
 
 -- Reader Definition
 data Reader e a = Reader (e -> a)
@@ -112,7 +113,7 @@ subst i v (Fix f) = Fix (subst i v f)
 
 
 -- Part 1 - Type Inference
-typeofM :: Env -> KULang -> (Maybe TypeKULang)
+typeofM :: Gamma -> KULang -> (Maybe TypeKULang)
 typeofM c (Num n) = if n>=0 then return TNum else Nothing
 typeofM c (Boolean b) = return TBool
 typeofM c (Plus l r) = do {TNum <- typeofM c l;
