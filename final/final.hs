@@ -193,7 +193,8 @@ evalStat e (Div l r) = do{(NumV l') <- (evalStat e l);
 evalStat e (Exp l r) = do{(NumV l') <- (evalStat e l);
                                (NumV r') <- (evalStat e r);
                                return (NumV (l' ^ r'))}
-evalStat e (Lambda i b) = return (ClosureV i b e)
+--evalStat e (Lambda i b) = return (ClosureV i b e)
+evalStat e (Lambda s t l) = return (ClosureV s l e) -- changed
 evalStat e (App f a) = do {(ClosureV i b e) <- (evalStat e f);
                                a' <- (evalStat e a);
                                evalStat ((i,a'):e) b }
