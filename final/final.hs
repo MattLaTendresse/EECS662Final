@@ -178,6 +178,7 @@ typeofM c (Fix t) = do { (d :->: r) <- typeofM c t;
 
 evalStat :: EnvVal -> KULang -> (Maybe KULangVal)
 evalStat _ (Num n) = return (NumV n)
+evalStat _ (Boolean b) = return (BooleanV b)
 evalStat e (Plus l r) = do{(NumV l') <- (evalStat e l);
                               (NumV r') <- (evalStat e r);
                               return (NumV (l' + r'))}
@@ -202,6 +203,13 @@ evalStat e (Id i) = lookup i e
 evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
 --end of part 2 by Junyi Zhao
+
+--Part 3--
+evalStat e (Fix f) = 
+  do {
+   (ClosureV i b j) <- evalStat e f;
+   evalStat j (subst i (Fix (Lambda i (TNum :->: TNum) b)) b)
+   }
 
 -- --part 4 - Jarrod Grothusen
 -- fibbonacci = interp( bind "fib"
