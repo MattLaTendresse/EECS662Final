@@ -202,3 +202,13 @@ evalStat e (Id i) = lookup i e
 evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
 --end of part 2 by Junyi Zhao
+
+-- --part 4 - Jarrod Grothusen
+-- fibbonacci = interp( bind "fib"
+--             (fix (Lambda "g" (TNum :->: TNum)
+--                 (Lambda "x" TNum
+--                     (If (Leq (Id "x") (Num 1))
+--                         (Id "x")
+--                         (Plus (App (Id "g") (Minus (Id "x") (Num 1))) (App (Id "g") (Minus (Id "x") (Num 2)))
+--             )))))
+--             (App (Id "fib") (Num 2))) == Just (NumV 1)
