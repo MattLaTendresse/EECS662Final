@@ -199,6 +199,17 @@ evalStat e (Lambda s t l) = return (ClosureV s l e) -- changed
 evalStat e (App f a) = do {(ClosureV i b e) <- (evalStat e f);
                                a' <- (evalStat e a);
                                evalStat ((i,a'):e) b }
+evalStat e (And l r) = do { (BooleanV l') <- evalStat e l;
+                            (BooleanV r') <- evalStat e r;
+                            return (BooleanV (l' && r')) }
+evalStat e (Or l r) = do { (BooleanV l') <- evalStat e l;
+                           (BooleanV r') <- evalStat e r;
+                           return (BooleanV (l' || r')) }
+evalStat e (Leq l r) = do { (NumV l') <- evalStat e l;
+                            (NumV r') <- evalStat e r;
+                            return (BooleanV (l' <= r')) }
+evalStat e (IsZero l) = do { (NumV l') <- evalStat e l;
+                             return (BooleanV (l' == 0)) }
 evalStat e (Id i) = lookup i e
 evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
