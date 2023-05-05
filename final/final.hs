@@ -210,6 +210,14 @@ evalStat e (Leq l r) = do { (NumV l') <- evalStat e l;
                             return (BooleanV (l' <= r')) }
 evalStat e (IsZero l) = do { (NumV l') <- evalStat e l;
                              return (BooleanV (l' == 0)) }
+evalStat e (If c t o) = do { (BooleanV c') <- evalStat e c;
+                             if c' then (evalStat e t) else (evalStat e o) }
+evalStat e (Bind i v b) = do { v' <- evalStat e v;
+                               evalStat ((i, v'):e) b }
+evalStat e (Between l c h) = do { (NumV l') <- evalStat e l;
+                                  (NumV c') <- evalStat e c;
+                                  (NumV h') <- evalStat e h;
+                                  return (BooleanV (l' <= c' && c' <= h')) }
 evalStat e (Id i) = lookup i e
 evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
