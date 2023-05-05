@@ -178,7 +178,6 @@ typeofM c (Fix t) = do { (d :->: r) <- typeofM c t;
 
 evalStat :: EnvVal -> KULang -> (Maybe KULangVal)
 evalStat _ (Num n) = return (NumV n)
-evalStat _ (Boolean b) = return (BooleanV b)
 evalStat e (Plus l r) = do{(NumV l') <- (evalStat e l);
                               (NumV r') <- (evalStat e r);
                               return (NumV (l' + r'))}
@@ -194,33 +193,37 @@ evalStat e (Div l r) = do{(NumV l') <- (evalStat e l);
 evalStat e (Exp l r) = do{(NumV l') <- (evalStat e l);
                                (NumV r') <- (evalStat e r);
                                return (NumV (l' ^ r'))}
---evalStat e (Lambda i b) = return (ClosureV i b e)
-evalStat e (Lambda s t l) = return (ClosureV s l e) -- changed
+                               --Lambda :: String -> TypeKULang -> KULang -> KULang 
+                               --ClosureV :: String -> KULang -> EnvVal -> KULangVal
+evalStat e (Lambda s t l) = return (ClosureV s l e)
 evalStat e (App f a) = do {(ClosureV i b e) <- (evalStat e f);
                                a' <- (evalStat e a);
                                evalStat ((i,a'):e) b }
-evalStat e (And l r) = do { (BooleanV l') <- evalStat e l;
-                            (BooleanV r') <- evalStat e r;
-                            return (BooleanV (l' && r')) }
-evalStat e (Or l r) = do { (BooleanV l') <- evalStat e l;
-                           (BooleanV r') <- evalStat e r;
-                           return (BooleanV (l' || r')) }
-evalStat e (Leq l r) = do { (NumV l') <- evalStat e l;
-                            (NumV r') <- evalStat e r;
-                            return (BooleanV (l' <= r')) }
-evalStat e (IsZero l) = do { (NumV l') <- evalStat e l;
-                             return (BooleanV (l' == 0)) }
-evalStat e (If c t o) = do { (BooleanV c') <- evalStat e c;
-                             if c' then (evalStat e t) else (evalStat e o) }
-evalStat e (Bind i v b) = do { v' <- evalStat e v;
-                               evalStat ((i, v'):e) b }
-evalStat e (Between l c h) = do { (NumV l') <- evalStat e l;
-                                  (NumV c') <- evalStat e c;
-                                  (NumV h') <- evalStat e h;
-                                  return (BooleanV (l' <= c' && c' <= h')) }
 evalStat e (Id i) = lookup i e
 evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
+
+evalStat _ (Boolean b) = return (BooleanV b)
+evalStat e (And l r) = do{(BooleanV l') <- (evalStat e l);
+                              (BooleanV r') <- (evalStat e r);
+                              return (BooleanV (l' && r'))}
+evalStat e (Or l r) = do{(BooleanV l') <- (evalStat e l);
+                              (BooleanV r') <- (evalStat e r);
+                              return (BooleanV (l' || r'))}
+
+evalStat e (Leq l r) = do{(NumV l') <- (evalStat e l);
+                              (NumV r') <- (evalStat e r);
+                              return (BooleanV (l' <= r'))}
+evalStat e (IsZero num) = do{(NumV num') <- (evalStat e num);
+                              return (BooleanV (num' == 0))}
+evalStat e (If c t f) = do{(BooleanV c') <- (evalStat e c);
+                              t' <- (evalStat e t);
+                              f' <- (evalStat e f);
+                              return (if c' then t'; else f')}
+evalStat e (Between s m l) = do {(NumV s') <- (evalStat e s);
+                                (NumV m') <- (evalStat e m);
+                                (NumV l') <- (evalStat e l);
+                                return(BooleanV ((s' < m') && (m' < l')))}
 --end of part 2 by Junyi Zhao
 
 --Part 3--
