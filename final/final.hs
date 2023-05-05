@@ -239,3 +239,11 @@ evalStat e (Fix f) =
 --                         (Plus (App (Id "g") (Minus (Id "x") (Num 1))) (App (Id "g") (Minus (Id "x") (Num 2)))
 --             )))))
 --             (App (Id "fib") (Num 2))) == Just (NumV 1)
+
+
+-- -- Part 5 - Joe Murray
+--Interpreter
+--interp :: Gamma -> EnvVal -> KULang -> Maybe KULangVal
+--interp gamma env expr = do
+  --ty <- typeofM gamma expr
+  --evalStat env expr
