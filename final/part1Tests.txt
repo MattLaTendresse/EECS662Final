@@ -1,0 +1,55 @@
+1. Testing `Num` expression with a positive integer:
+   - Input: `typeofM [] (Num 42)`
+   - Expected output: `Just TNum`
+   
+2. Testing `Num` expression with a negative integer:
+   - Input: `typeofM [] (Num -5)`
+   - Expected output: `Nothing`
+   
+3. Testing `Boolean` expression:
+   - Input: `typeofM [] (Boolean True)`
+   - Expected output: `Just TBool`
+   
+4. Testing `Plus` expression with valid operands:
+   - Input: `typeofM [] (Plus (Num 3) (Num 4))`
+   - Expected output: `Just TNum`
+   
+5. Testing `Plus` expression with invalid operands:
+   - Input: `typeofM [] (Plus (Num 2) (Boolean True))`
+   - Expected output: `Nothing`
+   
+6. Testing `Exp` expression with valid operands:
+   - Input: `typeofM [] (Exp (Num 2) (Num 3))`
+   - Expected output: `Just TNum`
+   
+7. Testing `Exp` expression with invalid operands:
+   - Input: `typeofM [] (Exp (Boolean True) (Num 3))`
+   - Expected output: `Nothing`
+   
+8. Testing `If0` expression with matching types:
+   - Input: `typeofM [] (If0 (Num 0) (Boolean True) (Boolean False))`
+   - Expected output: `Just TBool`
+   
+9. Testing `If0` expression with non-matching types:
+   - Input: `typeofM [] (If0 (Num 0) (Boolean True) (Num 3))`
+   - Expected output: `Nothing`
+   
+10. Testing `Bind` expression:
+   - Input: `typeofM [] (Bind "x" (Num 5) (Id "x"))`
+   - Expected output: `Just TNum`
+   
+11. Testing `Lambda` expression:
+   - Input: `typeofM [] (Lambda "x" TNum (Plus (Id "x") (Num 2)))`
+   - Expected output: `Just (TNum :->: TNum)`
+   
+12. Testing `App` expression with matching types:
+   - Input: `typeofM [] (App (Lambda "x" TNum (Plus (Id "x") (Num 2))) (Num 3))`
+   - Expected output: `Just TNum`
+   
+13. Testing `App` expression with non-matching types:
+   - Input: `typeofM [] (App (Lambda "x" TNum (Plus (Id "x") (Num 2))) (Boolean True))`
+   - Expected output: `Nothing`
+   
+14. Testing `Fix` expression:
+   - Input: `typeofM [] (Fix (Lambda "f" (TNum :->: TNum) (Lambda "x" TNum (If0 (Id "x") (Num 1) (Mult (Id "x") (App (Id "f") (Minus (Id "x") (Num 1))))))))`
+   - Expected output: `Just (TNum :->: TNum)`
