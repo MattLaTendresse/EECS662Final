@@ -231,14 +231,24 @@ evalStat e (Fix f) =
    }
 
 -- --part 4 - Jarrod Grothusen
--- fibbonacci = interp( bind "fib"
---             (fix (Lambda "g" (TNum :->: TNum)
---                 (Lambda "x" TNum
---                     (If (Leq (Id "x") (Num 1))
---                         (Id "x")
---                         (Plus (App (Id "g") (Minus (Id "x") (Num 1))) (App (Id "g") (Minus (Id "x") (Num 2)))
---             )))))
---             (App (Id "fib") (Num 2))) == Just (NumV 1)
+-- fibbo :: KULang -> Maybe KULangVal
+-- fibbonacci = interp [] [] ( Bind "fib"
+--              (Fix (Lambda "g" (TNum :->: TNum)
+--                  (Lambda "x" TNum
+--                      (If (Leq (Id "x") (Num 1))
+--                          (Id "x")
+--                          (Plus (App (Id "g") (Minus (Id "x") (Num 1))) (App (Id "g") (Minus (Id "x") (Num 2)))
+--              )))))
+--              (App (Id "fib") (Num 2))) == Just (NumV 1)
+-- fib :: Maybe KULang -> Maybe KULang -> KULang -> Maybe KULangVal
+-- fib x y z = if interp [] [] (IsZero z) == Just (BooleanV True) then Just (NumV (y)) else fib y (y+x) (z-1)
+-- fibbo :: KULang -> Maybe KULangVal
+-- fibbo x = do{fib (0+0) (1+0) x}
+
+fib :: Integer -> Integer
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n-1) + fib (n-2)
 
 
 -- -- Part 5 - Joe Murray
