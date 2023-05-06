@@ -112,7 +112,7 @@ subst i v (App f a) = (App (subst i v f) (subst i v a))
 subst i v (Fix f) = Fix (subst i v f)
 
 
--- Part 1 - Type Inference
+-- Part 1 - Type Inference - Matt Latendresse
 typeofM :: Gamma -> KULang -> (Maybe TypeKULang)
 typeofM c (Num n) = if n>=0 then return TNum else Nothing
 typeofM c (Boolean b) = return TBool
@@ -174,7 +174,7 @@ typeofM c (Fix t) = do { (d :->: r) <- typeofM c t;
                          
                          
                          
---Part2 - Junyi Zhao
+--Part2 - Junyi Zhao & Sam Jerguson
 
 evalStat :: EnvVal -> KULang -> (Maybe KULangVal)
 evalStat _ (Num n) = return (NumV n)
@@ -223,7 +223,7 @@ evalStat e (If0 c t o) = do {(NumV c') <- (evalStat e c);
                                 if c'==0 then (evalStat e t) else (evalStat e o) }
 --end of part 2 by Junyi Zhao
 
---Part 3--
+--Part 3 - Sam Jerguson -- 
 evalStat e (Fix f) = 
   do {
    (ClosureV i b j) <- evalStat e f;
@@ -231,29 +231,15 @@ evalStat e (Fix f) =
    }
 
 -- --part 4 - Jarrod Grothusen
--- fibbo :: KULang -> Maybe KULangVal
--- fibbonacci = interp [] [] ( Bind "fib"
---              (Fix (Lambda "g" (TNum :->: TNum)
---                  (Lambda "x" TNum
---                      (If (Leq (Id "x") (Num 1))
---                          (Id "x")
---                          (Plus (App (Id "g") (Minus (Id "x") (Num 1))) (App (Id "g") (Minus (Id "x") (Num 2)))
---              )))))
---              (App (Id "fib") (Num 2))) == Just (NumV 1)
--- fib :: Maybe KULang -> Maybe KULang -> KULang -> Maybe KULangVal
--- fib x y z = if interp [] [] (IsZero z) == Just (BooleanV True) then Just (NumV (y)) else fib y (y+x) (z-1)
--- fibbo :: KULang -> Maybe KULangVal
--- fibbo x = do{fib (0+0) (1+0) x}
-
 fib :: Integer -> Integer
 fib 0 = 0
 fib 1 = 1
 fib n = fib (n-1) + fib (n-2)
 
 
--- -- Part 5 - Joe Murray
+ -- Part 5 - Joe Murray
 --Interpreter
---interp :: Gamma -> EnvVal -> KULang -> Maybe KULangVal
---interp gamma env expr = do
-  --ty <- typeofM gamma expr
-  --evalStat env expr
+interp :: Gamma -> EnvVal -> KULang -> Maybe KULangVal
+interp gamma env expr = do
+  ty <- typeofM gamma expr
+  evalStat env expr
